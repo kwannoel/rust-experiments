@@ -4,7 +4,8 @@ version = "0.1.0"
 authors = ["Noel Kwan <noelkwan1998@gmail.com"]
 edition = "2018"
 
-# For running a particular bin e.g. sqs # cargo run --bin sqs
+############## Experiment on futures
+
 [[bin]]
  name = "await"
  path = "await.rs"
@@ -21,6 +22,25 @@ edition = "2018"
  name = "join-all"
  path = "join-all.rs"
 
+############## Experiment on Ownership + Lifetimes
+
+[[bin]]
+name = "rc"
+path = "rc.rs"
+
+[[bin]]
+name = "box"
+path = "box.rs"
+
+[[bin]]
+name = "refcell"
+path = "refcell.rs"
+
+[[bin]]
+name = "deadlock"
+path = "deadlock.rs"
+
 [dependencies]
 futures = "0.3.4"
 tokio = {version = "0.2.15", features = ["full"]}
+serde-json = ""
