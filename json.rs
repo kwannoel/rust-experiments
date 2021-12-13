@@ -6,6 +6,8 @@ struct Person {
     name: String,
     age: u8,
     phones: Vec<String>,
+    snail_case: u8,
+    camelCase: u8,
 }
 
 fn typed_example() -> Result<()> {
@@ -17,7 +19,9 @@ fn typed_example() -> Result<()> {
             "phones": [
                 "+44 1234567",
                 "+44 2345678"
-            ]
+            ],
+            "snail_case": 1,
+            "camelCase": 2
         }"#;
 
     // Parse the string of data into a Person object. This is exactly the
@@ -26,7 +30,8 @@ fn typed_example() -> Result<()> {
     let p: Person = serde_json::from_str(data)?;
 
     // Do things just like with any other Rust data structure.
-    println!("Please call {} at the number {}", p.name, p.phones[0]);
+    // println!("Please call {} at the number {}", p.name, p.phones[0]);
+    println!("Snail case works {}, Camel case works {}", p.snail_case, p.camelCase);
 
     Ok(())
 }
