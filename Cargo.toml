@@ -10,13 +10,15 @@ edition = "2018"
  name = "await"
  path = "await.rs"
 
-[[bin]]
- name = "async-for-loop"
- path = "async-for-loop.rs"
+# FIXME
+# [[bin]]
+#  name = "async-for-loop"
+#  path = "async-for-loop.rs"
 
-[[bin]]
- name = "futures-unordered"
- path = "futures-unordered.rs"
+# FIXME
+# [[bin]]
+#  name = "futures-unordered"
+#  path = "futures-unordered.rs"
 
 [[bin]]
  name = "join-all"
@@ -53,3 +55,14 @@ futures = "0.3.18"
 tokio = {version = "1.14.0", features = ["full"]}
 serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+
+[dev-dependencies]
+criterion = { version = "0.4.0" }
+
+[[bench]]
+name = "zip-overhead"
+harness = false
+
+[[bench]]
+name = "fibonacci"
+harness = false
