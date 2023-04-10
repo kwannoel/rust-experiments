@@ -3,17 +3,17 @@
 use criterion::black_box;
 use criterion::BatchSize;
 use criterion::{criterion_group, criterion_main, Criterion};
-use smallvec::SmallVec;
+use smallvec::{SmallVec, smallvec};
 
 fn bench_array(c: &mut Criterion) {
     c.bench_function("array inserts", |b| {
         b.iter_batched(
             || {
-                let v: [u8; 32] = black_box([0; 32]);
+                let v: [u8; 16] = black_box([0; 16]);
                 v
             },
             |mut v| {
-                for i in 0..32 {
+                for i in 0..16 {
                     v[i] = black_box(i as u8);
                 }
             },
@@ -26,11 +26,11 @@ fn bench_smallvec(c: &mut Criterion) {
     c.bench_function("smallvec inserts", |b| {
         b.iter_batched(
             || {
-                let v: SmallVec<[u8; 32]> = black_box(SmallVec::with_capacity(64 * 4));
+                let v: SmallVec<[u8; 16]> = black_box(SmallVec::with_capacity(16));
                 v
             },
             |mut v| {
-                for i in 0..32 {
+                for i in 0..16 {
                     v.push(black_box(i as u8));
                 }
             },
@@ -40,14 +40,11 @@ fn bench_smallvec(c: &mut Criterion) {
     c.bench_function("smallvec indexing", |b| {
         b.iter_batched(
             || {
-                let mut v: SmallVec<[u8; 32]> = black_box(SmallVec::with_capacity(64 * 4));
-                for i in 0..32 {
-                    v.push(black_box(i as u8));
-                }
+                let v: SmallVec<[u8; 16]> = black_box(smallvec![123; 16]);
                 v
             },
             |v| {
-                for i in 0..32 {
+                for i in 0..16 {
                     black_box(v[i]);
                 }
             },
@@ -60,11 +57,11 @@ fn bench_vec(c: &mut Criterion) {
     c.bench_function("vec inserts", |b| {
         b.iter_batched(
             || {
-                let v: Vec<u8> = black_box(Vec::with_capacity(64 * 4));
+                let v: Vec<u8> = black_box(Vec::with_capacity(16));
                 v
             },
             |mut v| {
-                for i in 0..32 {
+                for i in 0..16 {
                     v.push(black_box(i as u8));
                 }
             },
@@ -74,14 +71,11 @@ fn bench_vec(c: &mut Criterion) {
     c.bench_function("vec indexing", |b| {
         b.iter_batched(
             || {
-                let mut v: Vec<u8> = black_box(vec![123; 32]);
-                for i in 0..32 {
-                    v.push(black_box(i as u8));
-                }
+                let v: Vec<u8> = black_box(vec![123; 16]);
                 v
             },
             |v| {
-                for i in 0..32 {
+                for i in 0..16 {
                     black_box(v[i]);
                 }
             },
