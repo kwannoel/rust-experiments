@@ -58,6 +58,7 @@ serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 
 [dev-dependencies]
 criterion = { version = "0.4.0" }
+smallvec = { version = "1.10.0", features = ["union"] }
 
 [[bench]]
 name = "zip-overhead"
@@ -65,4 +66,8 @@ harness = false
 
 [[bench]]
 name = "fibonacci"
+harness = false
+
+[[bench]]
+name = "smallvec-vs-vec"
 harness = false
