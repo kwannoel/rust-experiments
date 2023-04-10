@@ -16,14 +16,14 @@ fn main() {
                     println!("{}", c);
                     println!("THREAD 1 SUCCESS")
                 },
-                Err(e) => {
+                Err(_e) => {
                     println!("THREAD 1 FAIL")
                 }
             }
         }
     });
 
-    let s2 = shared.clone();
+    let s2 = shared;
     let thread2 = thread::spawn(move || {
         loop {
             let ten_ms = Duration::from_millis(5000);
@@ -36,7 +36,7 @@ fn main() {
                     println!("{}", c);
                     println!("THREAD 2 SUCCESS")
                 },
-                Err(e) => {
+                Err(_e) => {
                     println!("THREAD 2 FAIL")
                 }
             }

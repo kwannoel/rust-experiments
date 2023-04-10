@@ -29,7 +29,7 @@ fn bench_smallvec(c: &mut Criterion) {
             v.push(black_box(i as u8));
         }
         v
-    }, |mut v| { for i in 0..32 {
+    }, |v| { for i in 0..32 {
         black_box(v[i]);
     }
     }, BatchSize::SmallInput));

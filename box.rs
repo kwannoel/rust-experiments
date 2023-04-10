@@ -30,6 +30,6 @@ fn main() {
     // Unable to check from type, what is the size?
     // From the type above, Cons(i32, List) can recurse indefinitely
     // The following gives compile error
-    let boxed_list = BoxedCons(1, Box::new(BoxedCons(2, Box::new(BoxedCons(3, Box::new(BoxedNil))))));
-    let ref_list = RefCons(1, &RefCons(1, &RefCons(1, &RefCons(2, &RefNil))));
+    let _boxed_list = BoxedCons(1, Box::new(BoxedCons(2, Box::new(BoxedCons(3, Box::new(BoxedNil))))));
+    let _ref_list = RefCons(1, &RefCons(1, &RefCons(1, &RefCons(2, &RefNil))));
 }
