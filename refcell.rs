@@ -10,5 +10,4 @@
 //     let y = &mut x; // invalid
 // }
 
-fn main() {
-}
+fn main() {}

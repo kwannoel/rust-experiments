@@ -6,7 +6,8 @@ async fn main() {
     // main_correct().await;
 }
 
-async fn main_deadlock() { // NOTE: This is demo for deadlock
+async fn main_deadlock() {
+    // NOTE: This is demo for deadlock
     let lock = RwLock::new(5);
 
     // many reader locks can be held at once

@@ -31,7 +31,10 @@ fn typed_example() -> Result<()> {
 
     // Do things just like with any other Rust data structure.
     // println!("Please call {} at the number {}", p.name, p.phones[0]);
-    println!("Snail case works {}, Camel case works {}", p.snail_case, p.camelCase);
+    println!(
+        "Snail case works {}, Camel case works {}",
+        p.snail_case, p.camelCase
+    );
 
     Ok(())
 }

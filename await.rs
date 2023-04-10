@@ -1,5 +1,5 @@
-use futures::future::{join_all, try_join_all};
 use futures::executor::block_on;
+use futures::future::{join_all, try_join_all};
 
 fn main() {
     println!("{:?}", block_on(prog_err_ignored()));
