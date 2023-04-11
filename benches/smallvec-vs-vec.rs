@@ -9,7 +9,7 @@ type SmallVec = LibSmallVec<[u8; 16]>;
 
 // ========== Build various datatypes =================
 
-fn build_small_vec() -> SmallVec {
+fn build_smallvec() -> SmallVec {
     let sz = black_box(16);
     black_box(smallvec![0; sz])
 }
@@ -40,7 +40,7 @@ fn bench_indexed_writes(mut v: impl AsMut<[u8]> + IndexMut<usize, Output=u8>) {
 }
 
 /// For struct with `push`, creates a closure for it, there is no trait for it.
-macro_rules! bench_insert {
+macro_rules! bench_inserts {
     () => {
         |mut v| {
             for i in 0..16 {
@@ -50,64 +50,42 @@ macro_rules! bench_insert {
     }
 }
 
+/// Handle benchmark boilerplate.
+macro_rules! bench_function {
+    ($criterion:ident, $name:literal, $builder:ident, $method:expr) => {
+        $criterion.bench_function(stringify!($name $method), bench_method!($builder, $method))
+    }
+}
+
+/// Handle benchmark boilerplate.
+macro_rules! bench_method {
+    ($builder:ident, $method:expr) => {
+      |b| {
+            b.iter_batched(
+                $builder,
+                $method,
+                BatchSize::SmallInput,
+            )
+        }
+    }
+}
+
 // ========== Benchmark various datatypes =================
 
 fn bench_array(c: &mut Criterion) {
-    c.bench_function("array indexed writes", |b| {
-        b.iter_batched(
-            build_array,
-            bench_indexed_writes,
-            BatchSize::SmallInput,
-        )
-    });
+    bench_function!(c, "array", build_array, bench_indexed_writes);
 }
 
 fn bench_smallvec(c: &mut Criterion) {
-    c.bench_function("smallvec inserts", |b| {
-        b.iter_batched(
-            build_small_vec,
-            bench_insert!(),
-            BatchSize::SmallInput,
-        )
-    });
-    c.bench_function("smallvec indexing", |b| {
-        b.iter_batched(
-            build_small_vec,
-            bench_index,
-            BatchSize::SmallInput,
-        )
-    });
-    c.bench_function("smallvec indexed writes", |b| {
-        b.iter_batched(
-            build_small_vec,
-            bench_indexed_writes,
-            BatchSize::SmallInput,
-        )
-    });
+    bench_function!(c, "smallvec", build_smallvec, bench_inserts!());
+    bench_function!(c, "smallvec", build_smallvec, bench_index);
+    bench_function!(c, "smallvec", build_smallvec, bench_indexed_writes);
 }
 
 fn bench_vec(c: &mut Criterion) {
-    c.bench_function("vec inserts", |b| {
-        b.iter_batched(
-            build_vec,
-            bench_insert!(),
-            BatchSize::SmallInput,
-        )
-    });
-    c.bench_function("vec indexing", |b| {
-        b.iter_batched(
-            build_vec,
-            bench_index,
-            BatchSize::SmallInput,
-        )
-    });
-    c.bench_function("vec indexed writes", |b| {
-        b.iter_batched(
-            build_vec,
-            bench_indexed_writes,
-            BatchSize::SmallInput,
-        )
-    });
+    bench_function!(c, "vec", build_vec, bench_inserts!());
+    bench_function!(c, "vec", build_vec, bench_index);
+    bench_function!(c, "vec", build_vec, bench_indexed_writes);
 }
 
 criterion_group!(benches, bench_smallvec, bench_vec, bench_array);
