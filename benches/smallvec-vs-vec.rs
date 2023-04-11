@@ -9,8 +9,10 @@ use paste::paste;
 use std::ops::DerefMut;
 use dhat;
 use dhat::Profiler;
+use tinyvec::{TinyVec as LibTinyVec, tiny_vec};
 
 type SmallVec = LibSmallVec<[u8; 16]>;
+type TinyVec = LibTinyVec<[u8; 16]>;
 
 // ========== Build various datatypes =================
 
@@ -25,6 +27,10 @@ fn build_vec() -> Vec<u8> {
 
 fn build_array() -> [u8; 16] {
     black_box([0; 16])
+}
+
+fn build_tinyvec() -> TinyVec {
+    black_box(tiny_vec![0; 16])
 }
 
 // ========== Benchmark methods =================
@@ -44,10 +50,46 @@ fn bench_indexed_writes(mut v: impl AsMut<[u8]> + IndexMut<usize, Output=u8>) {
 }
 
 /// Benchmark copy slice
-fn bench_copy_slice(mut v: impl DerefMut<Target=[u8]>) {
+macro_rules! bench_copy_slice_unknown_bounds {
+    () => {
+        |mut v| {
+             for i in 0..10_000 {
+                let start = black_box(0);
+                let end = black_box(16);
+                let value = black_box(i % 16);
+                let slice = [value as u8; 16];
+                v[start..end].copy_from_slice(&slice[..]);
+            }
+        }
+    }
+}
+macro_rules! bench_copy_slice_known_bounds {
+    () => {
+      |mut v| {
+           for i in 0..10_000 {
+               let slice = [(i % 16) as u8; 16];
+               v[0..16].copy_from_slice(&slice[..]);
+           }
+      }
+    }
+}
+
+/// Benchmark copy slice
+fn bench_copy_slice_known_bounds(mut v: impl DerefMut<Target=[u8]>) {
     for i in 0..10_000 {
-        let slice = black_box([(i % 16) as u8; 16]);
-        v[..(black_box(16))].copy_from_slice(&slice[..]);
+        let slice = [(i % 16) as u8; 16];
+        v[0..16].copy_from_slice(&slice[..]);
+    }
+}
+
+/// Benchmark copy slice
+fn bench_copy_slice_unknown_bounds(mut v: impl DerefMut<Target=[u8]>) {
+    for i in 0..10_000 {
+        let start = black_box(0);
+        let end = black_box(16);
+        let value = black_box(i % 16);
+        let slice = [value as u8; 16];
+        v[start..end].copy_from_slice(&slice[..]);
     }
 }
 
@@ -88,23 +130,36 @@ macro_rules! bench_method {
 
 fn bench_array(c: &mut Criterion) {
     bench_function!(c, array, bench_indexed_writes);
+    bench_function!(c, array, bench_copy_slice_known_bounds!());
+    bench_function!(c, array, bench_copy_slice_unknown_bounds!());
 }
 
 fn bench_smallvec(c: &mut Criterion) {
     bench_function!(c, smallvec, bench_inserts!());
     bench_function!(c, smallvec, bench_index);
     bench_function!(c, smallvec, bench_indexed_writes);
-    bench_function!(c, smallvec, bench_copy_slice);
+    bench_function!(c, smallvec, bench_copy_slice_known_bounds);
+    bench_function!(c, smallvec, bench_copy_slice_unknown_bounds);
 }
 
 fn bench_vec(c: &mut Criterion) {
     bench_function!(c, vec, bench_inserts!());
     bench_function!(c, vec, bench_index);
     bench_function!(c, vec, bench_indexed_writes);
-    bench_function!(c, vec, bench_copy_slice);
+    bench_function!(c, vec, bench_copy_slice_known_bounds);
+    bench_function!(c, vec, bench_copy_slice_unknown_bounds);
 }
 
-criterion_group!(benches, bench_smallvec, bench_vec, bench_array);
+
+fn bench_tinyvec(c: &mut Criterion) {
+    bench_function!(c, tinyvec, bench_inserts!());
+    bench_function!(c, tinyvec, bench_index);
+    bench_function!(c, tinyvec, bench_indexed_writes);
+    bench_function!(c, tinyvec, bench_copy_slice_known_bounds);
+    bench_function!(c, tinyvec, bench_copy_slice_unknown_bounds);
+}
+
+criterion_group!(benches, bench_tinyvec, bench_smallvec, bench_vec, bench_array);
 #[cfg(feature = "dhat-heap")]
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;
