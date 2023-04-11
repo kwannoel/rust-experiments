@@ -58,7 +58,7 @@ macro_rules! bench_copy_slice_unknown_bounds {
                 let end = black_box(16);
                 let value = black_box(i % 16);
                 let slice = [value as u8; 16];
-                v[start..end].copy_from_slice(&slice[..]);
+                black_box(v[start..end].copy_from_slice(&slice[..]));
             }
         }
     }
@@ -68,7 +68,7 @@ macro_rules! bench_copy_slice_known_bounds {
       |mut v| {
            for i in 0..10_000 {
                let slice = [(i % 16) as u8; 16];
-               v[0..16].copy_from_slice(&slice[..]);
+               black_box(v[0..16].copy_from_slice(&slice[..]));
            }
       }
     }
@@ -78,7 +78,7 @@ macro_rules! bench_copy_slice_known_bounds {
 fn bench_copy_slice_known_bounds(mut v: impl DerefMut<Target=[u8]>) {
     for i in 0..10_000 {
         let slice = [(i % 16) as u8; 16];
-        v[0..16].copy_from_slice(&slice[..]);
+        black_box(v[0..16].copy_from_slice(&slice[..]));
     }
 }
 
@@ -89,7 +89,7 @@ fn bench_copy_slice_unknown_bounds(mut v: impl DerefMut<Target=[u8]>) {
         let end = black_box(16);
         let value = black_box(i % 16);
         let slice = [value as u8; 16];
-        v[start..end].copy_from_slice(&slice[..]);
+        black_box(v[start..end].copy_from_slice(&slice[..]));
     }
 }
 
