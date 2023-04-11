@@ -5,6 +5,7 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use std::ops::{Index, IndexMut};
 use smallvec::{SmallVec as LibSmallVec, smallvec};
 use paste::paste;
+use std::ops::DerefMut;
 
 type SmallVec = LibSmallVec<[u8; 16]>;
 
@@ -37,6 +38,14 @@ fn bench_index(v: impl Index<usize, Output=u8>) {
 fn bench_indexed_writes(mut v: impl AsMut<[u8]> + IndexMut<usize, Output=u8>) {
     for i in 0..10_000 {
         v[black_box(i%16)] = black_box(i as u8);
+    }
+}
+
+/// Benchmark copy slice
+fn bench_copy_slice(mut v: impl DerefMut<Target=[u8]>) {
+    for i in 0..10_000 {
+        let slice = black_box([(i % 16) as u8; 16]);
+        v[..(black_box(16))].copy_from_slice(&slice[..]);
     }
 }
 
@@ -83,13 +92,14 @@ fn bench_smallvec(c: &mut Criterion) {
     bench_function!(c, smallvec, bench_inserts!());
     bench_function!(c, smallvec, bench_index);
     bench_function!(c, smallvec, bench_indexed_writes);
-    // bench_function!(c, "smallvec", build_smallvec, bench_copy_slice);
+    bench_function!(c, smallvec, bench_copy_slice);
 }
 
 fn bench_vec(c: &mut Criterion) {
     bench_function!(c, vec, bench_inserts!());
     bench_function!(c, vec, bench_index);
     bench_function!(c, vec, bench_indexed_writes);
+    bench_function!(c, vec, bench_copy_slice);
 }
 
 criterion_group!(benches, bench_smallvec, bench_vec, bench_array);
