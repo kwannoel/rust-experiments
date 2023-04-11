@@ -4,6 +4,7 @@ use criterion::BatchSize;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use std::ops::{Index, IndexMut};
 use smallvec::{SmallVec as LibSmallVec, smallvec};
+use paste::paste;
 
 type SmallVec = LibSmallVec<[u8; 16]>;
 
@@ -52,8 +53,10 @@ macro_rules! bench_inserts {
 
 /// Handle benchmark boilerplate.
 macro_rules! bench_function {
-    ($criterion:ident, $name:literal, $builder:ident, $method:expr) => {
-        $criterion.bench_function(stringify!($name $method), bench_method!($builder, $method))
+    ($criterion:ident, $name:ident, $method:expr) => {
+        $criterion.bench_function(stringify!($name $method), paste!{
+            bench_method!([<build_ $name>], $method)
+        })
     }
 }
 
@@ -73,19 +76,20 @@ macro_rules! bench_method {
 // ========== Benchmark various datatypes =================
 
 fn bench_array(c: &mut Criterion) {
-    bench_function!(c, "array", build_array, bench_indexed_writes);
+    bench_function!(c, array, bench_indexed_writes);
 }
 
 fn bench_smallvec(c: &mut Criterion) {
-    bench_function!(c, "smallvec", build_smallvec, bench_inserts!());
-    bench_function!(c, "smallvec", build_smallvec, bench_index);
-    bench_function!(c, "smallvec", build_smallvec, bench_indexed_writes);
+    bench_function!(c, smallvec, bench_inserts!());
+    bench_function!(c, smallvec, bench_index);
+    bench_function!(c, smallvec, bench_indexed_writes);
+    // bench_function!(c, "smallvec", build_smallvec, bench_copy_slice);
 }
 
 fn bench_vec(c: &mut Criterion) {
-    bench_function!(c, "vec", build_vec, bench_inserts!());
-    bench_function!(c, "vec", build_vec, bench_index);
-    bench_function!(c, "vec", build_vec, bench_indexed_writes);
+    bench_function!(c, vec, bench_inserts!());
+    bench_function!(c, vec, bench_index);
+    bench_function!(c, vec, bench_indexed_writes);
 }
 
 criterion_group!(benches, bench_smallvec, bench_vec, bench_array);
