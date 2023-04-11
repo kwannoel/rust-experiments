@@ -2,10 +2,12 @@
 
 use criterion::BatchSize;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use std::ops::IndexMut;
+use std::ops::{Index, IndexMut};
 use smallvec::{SmallVec as LibSmallVec, smallvec};
 
 type SmallVec = LibSmallVec<[u8; 16]>;
+
+// ========== Build various datatypes =================
 
 fn build_small_vec() -> SmallVec {
     let sz = black_box(16);
@@ -21,11 +23,34 @@ fn build_array() -> [u8; 16] {
     black_box([0; 16])
 }
 
-fn bench_indexed_writes(mut v: impl AsMut<[u8]> + IndexMut<usize, Output=u8>) {
-    for i in 0..16 {
-        v[i] = black_box(16-(i as u8));
+// ========== Benchmark methods =================
+
+/// Benchmark index op.
+fn bench_index(v: impl Index<usize, Output=u8>) {
+    for i in 0..10_000 {
+        black_box(v[black_box(i%16)]);
     }
 }
+
+/// Benchmark assign at index.
+fn bench_indexed_writes(mut v: impl AsMut<[u8]> + IndexMut<usize, Output=u8>) {
+    for i in 0..10_000 {
+        v[black_box(i%16)] = black_box(i as u8);
+    }
+}
+
+/// For struct with `push`, creates a closure for it, there is no trait for it.
+macro_rules! bench_insert {
+    () => {
+        |mut v| {
+            for i in 0..16 {
+                v.push(black_box(i as u8));
+            }
+        }
+    }
+}
+
+// ========== Benchmark various datatypes =================
 
 fn bench_array(c: &mut Criterion) {
     c.bench_function("array indexed writes", |b| {
@@ -40,29 +65,15 @@ fn bench_array(c: &mut Criterion) {
 fn bench_smallvec(c: &mut Criterion) {
     c.bench_function("smallvec inserts", |b| {
         b.iter_batched(
-            || {
-                let v: SmallVec = black_box(SmallVec::with_capacity(16));
-                v
-            },
-            |mut v| {
-                for i in 0..16 {
-                    v.push(black_box(i as u8));
-                }
-            },
+            build_small_vec,
+            bench_insert!(),
             BatchSize::SmallInput,
         )
     });
     c.bench_function("smallvec indexing", |b| {
         b.iter_batched(
-            || {
-                let v: SmallVec = black_box(smallvec![123; 16]);
-                v
-            },
-            |v| {
-                for i in 0..16 {
-                    black_box(v[i]);
-                }
-            },
+            build_small_vec,
+            bench_index,
             BatchSize::SmallInput,
         )
     });
@@ -78,29 +89,15 @@ fn bench_smallvec(c: &mut Criterion) {
 fn bench_vec(c: &mut Criterion) {
     c.bench_function("vec inserts", |b| {
         b.iter_batched(
-            || {
-                let v: Vec<u8> = black_box(Vec::with_capacity(16));
-                v
-            },
-            |mut v| {
-                for i in 0..16 {
-                    v.push(black_box(i as u8));
-                }
-            },
+            build_vec,
+            bench_insert!(),
             BatchSize::SmallInput,
         )
     });
     c.bench_function("vec indexing", |b| {
         b.iter_batched(
-            || {
-                let v: Vec<u8> = black_box(vec![123; 16]);
-                v
-            },
-            |v| {
-                for i in 0..16 {
-                    black_box(v[i]);
-                }
-            },
+            build_vec,
+            bench_index,
             BatchSize::SmallInput,
         )
     });
