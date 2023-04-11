@@ -7,7 +7,7 @@ use smallvec::{SmallVec as LibSmallVec, smallvec};
 use paste::paste;
 use std::ops::DerefMut;
 
-type SmallVec = LibSmallVec<[u8; 16]>;
+type SmallVec = LibSmallVec<[u64; 16]>;
 
 // ========== Build various datatypes =================
 
@@ -16,35 +16,35 @@ fn build_smallvec() -> SmallVec {
     black_box(smallvec![0; sz])
 }
 
-fn build_vec() -> Vec<u8> {
+fn build_vec() -> Vec<u64> {
     let sz = black_box(16);
     black_box(vec![0; sz])
 }
 
-fn build_array() -> [u8; 16] {
+fn build_array() -> [u64; 16] {
     black_box([0; 16])
 }
 
 // ========== Benchmark methods =================
 
 /// Benchmark index op.
-fn bench_index(v: impl Index<usize, Output=u8>) {
+fn bench_index(v: impl Index<usize, Output=u64>) {
     for i in 0..10_000 {
         black_box(v[black_box(i%16)]);
     }
 }
 
 /// Benchmark assign at index.
-fn bench_indexed_writes(mut v: impl AsMut<[u8]> + IndexMut<usize, Output=u8>) {
+fn bench_indexed_writes(mut v: impl AsMut<[u64]> + IndexMut<usize, Output=u64>) {
     for i in 0..10_000 {
-        v[black_box(i%16)] = black_box(i as u8);
+        v[black_box(i%16)] = black_box(i as u64);
     }
 }
 
 /// Benchmark copy slice
-fn bench_copy_slice(mut v: impl DerefMut<Target=[u8]>) {
+fn bench_copy_slice(mut v: impl DerefMut<Target=[u64]>) {
     for i in 0..10_000 {
-        let slice = black_box([(i % 16) as u8; 16]);
+        let slice = black_box([(i % 16) as u64; 16]);
         v[..(black_box(16))].copy_from_slice(&slice[..]);
     }
 }
@@ -54,7 +54,7 @@ macro_rules! bench_inserts {
     () => {
         |mut v| {
             for i in 0..16 {
-                v.push(black_box(i as u8));
+                v.push(black_box(i as u64));
             }
         }
     }
@@ -103,4 +103,13 @@ fn bench_vec(c: &mut Criterion) {
 }
 
 criterion_group!(benches, bench_smallvec, bench_vec, bench_array);
-criterion_main!(benches);
+// #[cfg(feature = "dhat-heap")]
+// #[global_allocator]
+// static ALLOC: dhat::Alloc = dhat::Alloc;
+fn main() {
+    benches();
+    Criterion::default()
+        .configure_from_args()
+        .final_summary()
+}
+// criterion_main!(benches);
