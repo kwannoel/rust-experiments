@@ -36,6 +36,11 @@ pub fn compare3(v1: Vec<Simd<Item, 16>>, v2: Vec<Simd<Item, 16>>) -> bool {
 
 }
 
+pub fn compare4(v1: Vec<u64>, v2: Vec<u64>) -> bool {
+    v1 == v2
+
+}
+
 pub fn bench_compare3(c: &mut Criterion) {
     let setup_3_diff = || {
         let v1 = black_box(vec![black_box(0); black_box(1000)]);
@@ -75,6 +80,33 @@ pub fn bench_compare3(c: &mut Criterion) {
     });
 }
 
+pub fn bench_compare4(c: &mut Criterion) {
+    let setup_3_diff = || {
+        let v1 = black_box(vec![black_box(0); black_box(1000/8)]);
+        let v2 = black_box(vec![black_box(1); black_box(1000/8)]);
+        (v1, v2)
+    };
+    let setup_3_same = || {
+        let v1 = black_box(vec![black_box(0); black_box(1000/8)]);
+        let v2 = black_box(vec![black_box(0); black_box(1000/8)]);
+        (v1, v2)
+    };
+    c.bench_function("compare4 diff", |b| {
+        b.iter_batched(
+            setup_3_diff,
+            | (v1, v2) | compare4(v1, v2),
+            BatchSize::SmallInput,
+        )
+    });
+    c.bench_function("compare4 same", |b| {
+        b.iter_batched(
+            setup_3_same,
+            | (v1, v2) | compare4(v1, v2),
+            BatchSize::SmallInput,
+        )
+    });
+}
+
 macro_rules! make_bench {
     ($name:ident) => {
         paste!{
@@ -103,7 +135,7 @@ macro_rules! make_bench {
 make_bench!(compare);
 make_bench!(compare2);
 
-criterion_group!(benches, bench_compare, bench_compare2, bench_compare3);
+criterion_group!(benches, bench_compare, bench_compare2, bench_compare3, bench_compare4);
 fn main() {
     benches();
     Criterion::default()
