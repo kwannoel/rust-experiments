@@ -79,6 +79,10 @@ harness = false
 name = "smallvec-vs-vec"
 harness = false
 
+[[bench]]
+name = "vec-eq-simd"
+harness = false
+
 [profile.release]
 debug = 1
 
