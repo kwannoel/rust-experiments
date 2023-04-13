@@ -1,3 +1,5 @@
+#![allow(warnings, unused)]
+
 use tokio::sync::RwLock;
 
 #[tokio::main]

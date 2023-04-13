@@ -1,3 +1,4 @@
+#![allow(warnings, unused)]
 use serde::{Deserialize, Serialize};
 use serde_json::Result;
 
