@@ -3,10 +3,9 @@
 //! ```sh
 //! cargo bench --features --bench smallvec-vs-vec -- smallvec bench_eq
 //! # With dhat
-//! cargo bench --features dhat-heap --bench smallvec-vs-vec -- smallvec bench_eq
-//! cargo bench --features dhat-heap --bench smallvec-vs-vec -- vec bench_eq
-//! cargo bench --features dhat-heap --bench smallvec-vs-vec -- tinyvec bench_eq
+//! cargo bench --features dhat-heap --bench smallvec-vs-vec -- "array bench_eq" --profile-time 10
 //! ```
+//! `--profile-time` is needed to criterion won't do profiling, then we won't measure heap overhead from criterion.
 //!
 //! View heap allocations: https://nnethercote.github.io/dh_view/dh_view.html
 
@@ -30,7 +29,7 @@ fn build_smallvec() -> SmallVec {
     black_box(smallvec_inline![0; 16])
 }
 
-fn build_vec() -> Vec<u8> {
+fn build_stdvec() -> Vec<u8> {
     black_box(vec![0; 16])
 }
 
@@ -169,12 +168,12 @@ fn bench_smallvec(c: &mut Criterion) {
 }
 
 fn bench_vec(c: &mut Criterion) {
-    bench_function!(c, vec, bench_inserts!());
-    bench_function!(c, vec, bench_index);
-    bench_function!(c, vec, bench_indexed_writes);
-    bench_function!(c, vec, bench_copy_slice_known_bounds);
-    bench_function!(c, vec, bench_copy_slice_unknown_bounds);
-    bench_function2!(c, vec, bench_eq!());
+    bench_function!(c, stdvec, bench_inserts!());
+    bench_function!(c, stdvec, bench_index);
+    bench_function!(c, stdvec, bench_indexed_writes);
+    bench_function!(c, stdvec, bench_copy_slice_known_bounds);
+    bench_function!(c, stdvec, bench_copy_slice_unknown_bounds);
+    bench_function2!(c, stdvec, bench_eq!());
 }
 
 fn bench_tinyvec(c: &mut Criterion) {
