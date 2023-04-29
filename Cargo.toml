@@ -83,6 +83,10 @@ harness = false
 name = "vec-eq-simd"
 harness = false
 
+[[bench]]
+name = "match-dyn"
+harness = false
+
 [profile.release]
 debug = 1
 
