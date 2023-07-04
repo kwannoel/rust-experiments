@@ -1,6 +1,6 @@
 use smallvec::SmallVec;
-use tinyvec::TinyVec;
 use std::mem::size_of;
+use tinyvec::TinyVec;
 
 fn main() {
     println!(
@@ -19,12 +19,6 @@ fn main() {
         "size_of SmallVec u8 * 32: {}",
         size_of::<SmallVec<[u8; 32]>>()
     );
-    println!(
-        "size_of Option<usize>: {}",
-        size_of::<Option<usize>>()
-    );
-    println!(
-        "size_of usize: {}",
-        size_of::<usize>()
-    );
+    println!("size_of Option<usize>: {}", size_of::<Option<usize>>());
+    println!("size_of usize: {}", size_of::<usize>());
 }

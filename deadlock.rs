@@ -1,5 +1,3 @@
-
-
 #![allow(warnings, unused)]
 
 use std::sync::{Arc, Mutex};
