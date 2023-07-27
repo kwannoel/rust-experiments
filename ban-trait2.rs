@@ -6,6 +6,9 @@ trait NotOrd {}
 
 impl !Ord for Custom {}
 
+// Triggers compilation error
+// impl Ord for Custom {}
+
 struct AllowOrd<T>(T);
 
 impl PartialEq for AllowOrd<Custom> {
