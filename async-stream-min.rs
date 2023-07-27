@@ -27,6 +27,7 @@ async fn bad() -> Op {
     transform(Box::pin(iter().await))
 }
 
+#[allow(dead_code)]
 #[stream(item = Result<usize>)]
 async fn good() {
     #[for_await]

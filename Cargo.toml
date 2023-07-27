@@ -62,6 +62,10 @@ path = "async-stream.rs"
 name = "async-stream-min"
 path = "async-stream-min.rs"
 
+[[bin]]
+name = "ban-trait"
+path = "ban-trait.rs"
+
 [dependencies]
 anyhow = "1.0"
 futures = "0.3.18"
