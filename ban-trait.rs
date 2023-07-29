@@ -4,6 +4,7 @@ struct Custom {}
 trait NotOrd {}
 
 impl<T> NotOrd for T where T: PartialOrd {}
+impl NotOrd for Custom {}
 
 impl PartialEq for Custom {
     fn eq(&self, other: &Self) -> bool {
@@ -19,12 +20,12 @@ impl PartialOrd for Custom {
         None
     }
 }
-
-impl Ord for Custom {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        std::cmp::Ordering::Equal
-    }
-}
+//
+// impl Ord for Custom {
+//     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+//         std::cmp::Ordering::Equal
+//     }
+// }
 
 fn main() {
 

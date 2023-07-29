@@ -7,7 +7,7 @@ trait NotOrd {}
 impl !Ord for Custom {}
 
 // Triggers compilation error
-// impl Ord for Custom {}
+impl Ord for Custom {}
 
 struct AllowOrd<T>(T);
 

@@ -70,6 +70,14 @@ path = "ban-trait.rs"
 name = "ban-trait2"
 path = "ban-trait2.rs"
 
+[[bin]]
+name = "mut-and-arc-ref"
+path = "mut-and-arc-ref.rs"
+
+[[bin]]
+name = "warn-option"
+path = "warn-option.rs"
+
 [dependencies]
 anyhow = "1.0"
 futures = "0.3.18"
