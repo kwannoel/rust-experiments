@@ -1,0 +1,27 @@
+//! 1. Consider a stream in tokio.
+//!    If only the first item is polled, will we also iter on the subsequent ones?
+//! 2. Consider N streams in tokio.
+//!    After they are merged, will we poll the first item of all of them?
+#[prelude_import]
+use std::prelude::rust_2018::*;
+#[macro_use]
+extern crate std;
+use tokio;
+use std::fs;
+
+fn main() {
+        let body =
+            #[lang = "identity_future"](|mut _task_context:
+                        #[lang = "ResumeTy"]|
+                    {
+                            {
+                                    ::std::io::_print(<#[lang = "format_arguments"]>::new_v1(&["Hello, world!\n"],
+                                            &[]));
+                                }
+                        });
+
+        #[allow(clippy :: expect_used, clippy :: diverging_sub_expression)]
+        {
+                return tokio::runtime::Builder::new_multi_thread().enable_all().build().expect("Failed building the Runtime").block_on(body);
+            }
+    }
