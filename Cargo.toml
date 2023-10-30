@@ -96,6 +96,10 @@ path = "rust-spawn-thread.rs"
 name = "rust-drop-guard-spawn-thread"
 path = "rust-drop-guard-spawn-thread.rs"
 
+[[bin]]
+name = "try-with-return"
+path = "try-with-return.rs"
+
 [dependencies]
 anyhow = "1.0"
 futures = "0.3.18"
