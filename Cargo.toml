@@ -7,6 +7,14 @@ edition = "2018"
 ############## Experiment on futures
 
 [[bin]]
+name = "drop-after-abort"
+path = "drop-after-abort.rs"
+
+[[bin]]
+name = "in-memory-sqlite"
+path = "in-memory-sqlite.rs"
+
+[[bin]]
  name = "await"
  path = "await.rs"
 
@@ -100,10 +108,14 @@ path = "rust-drop-guard-spawn-thread.rs"
 name = "try-with-return"
 path = "try-with-return.rs"
 
+[[bin]]
+name = "thread-local"
+path = "thread-local.rs"
+
+
 [dependencies]
 anyhow = "1.0"
 futures = "0.3.18"
-tokio = {version = "1.14.0", features = ["full"]}
 tokio-retry = {version = "0.3.0"}
 serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
@@ -112,6 +124,22 @@ tinyvec = { version = "1.6.0", features = ["alloc"] }
 paste = "1.0.12"
 dhat = "0.3.2"
 futures-async-stream = "0.2"
+sqlite = "0.36"
+
+[target.'cfg(madsim)'.dependencies]
+tokio = {version = "0.2.0", features = ["full"]}
+
+[target.'cfg(not(madsim))'.dependencies]
+tokio = { version = "0.2", package = "madsim-tokio", features = [
+    "rt",
+    "rt-multi-thread",
+    "sync",
+    "macros",
+    "time",
+    "signal",
+    "process",
+    "io-util",
+] }
 
 [dev-dependencies]
 criterion = { version = "0.4.0" }
