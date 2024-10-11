@@ -1,4 +1,5 @@
 use sqlite;
+use sqlite::OpenFlags;
 
 fn main_fail() {
     let connection = sqlite::open(":memory:").unwrap();
@@ -28,7 +29,8 @@ fn main_fail() {
 }
 
 fn main() {
-    let connection = sqlite::open("file:membdb1?mode=memory").unwrap();
+    // let connection = sqlite::open("file::memory:?cache=shared").unwrap();
+    let connection = sqlite::Connection::open_with_flags("file::memory:?cache=shared", OpenFlags::new().with_create().with_read_write().with_uri()).unwrap();
     connection
         .execute(
             "CREATE TABLE users (name TEXT NOT NULL, age INTEGER NOT NULL)",
@@ -46,7 +48,7 @@ fn main() {
         println!("{:?}", row);
     }
 
-    let another_connection = sqlite::open("file:membdb1?mode=memory").unwrap();
+    let another_connection = sqlite::Connection::open_with_flags("file::memory:?cache=shared", OpenFlags::new().with_create().with_read_write().with_uri()).unwrap();
     another_connection
         .iterate("SELECT name, age FROM users WHERE age > 30", |row| {
             println!("{:?}", row);
